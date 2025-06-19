@@ -7,6 +7,11 @@
 - Evaluation pipeline for comparison
 - Dockerized
 
+## 🔑 Environment Setup
+
+1. Copy `.env.example` to `.env`
+2. Add your Hugging Face API key:
+
 ## 🚀 Run
 ```bash
 python app/build_index.py
