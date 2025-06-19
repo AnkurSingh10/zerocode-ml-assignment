@@ -19,12 +19,12 @@ class RAGPipeline:
 
         # Load FAISS index and QA data
         self.index = faiss.read_index(
-            r"C:\Users\ankur\OneDrive\Desktop\learning\zc_assignment\Embeddings\faiss_index.index"
+            "Embeddings\faiss_index.index"
         )
         print("✅ FAISS index expects vector dimension:", self.index.d)
 
         with open(
-            r"C:\Users\ankur\OneDrive\Desktop\learning\zc_assignment\Embeddings\qa_data.pkl", "rb"
+            "Embeddings\qa_data.pkl", "rb"
         ) as f:
             data = pickle.load(f)
         self.questions = data["questions"]
