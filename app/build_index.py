@@ -5,7 +5,7 @@ import numpy as np
 import pickle
 
 # Load dataset
-df = pd.read_csv(r"C:\Users\ankur\OneDrive\Desktop\learning\zc_assignment\Embeddings\QA.csv")
+df = pd.read_csv("Embeddings\QA.csv")
 
 # 🔥 Limit to a smaller subset (adjust as needed)
 MAX_ENTRIES = 1000 #>=400
@@ -24,8 +24,8 @@ index = faiss.IndexFlatL2(embeddings.shape[1])
 index.add(np.array(embeddings))
 
 # Save index and data
-faiss.write_index(index, r"C:\Users\ankur\OneDrive\Desktop\learning\zc_assignment\Embeddings\faiss_index.index")
-with open(r"C:\Users\ankur\OneDrive\Desktop\learning\zc_assignment\Embeddings\qa_data.pkl", "wb") as f:
+faiss.write_index(index, "Embeddings\faiss_index.index")
+with open("Embeddings\qa_data.pkl", "wb") as f:
     pickle.dump({"questions": questions, "answers": answers}, f)
 
 print("index and QA data saved.")
