@@ -5,18 +5,19 @@ import pickle
 import os
 import traceback 
 from huggingface_hub import InferenceClient
-
+from dotenv import load_dotenv
+load_dotenv() 
 
 class RAGPipeline:
     def __init__(self):
-        # ✅ Hugging Face API token and model
-        self.api_token = "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"
+        # Hugging Face API token and model
+        self.api_token = os.getenv("HF_API_KEY")
         # self.model_name = "mistralai/Mistral-7B-Instruct-v0.1"
         self.model_name = "HuggingFaceH4/zephyr-7b-beta"
 
-        self.client = InferenceClient(model=self.model_name, token=self.api_token)  # ✅ Use InferenceClient
+        self.client = InferenceClient(model=self.model_name, token=self.api_token) 
 
-        # ✅ Load FAISS index and QA data
+        # Load FAISS index and QA data
         self.index = faiss.read_index(
             r"C:\Users\ankur\OneDrive\Desktop\learning\zc_assignment\Embeddings\faiss_index.index"
         )
@@ -29,20 +30,19 @@ class RAGPipeline:
         self.questions = data["questions"]
         self.answers = data["answers"]
     
-    # ✅ Remote embedding using hosted MiniLM model (because local is too heavy)
     def remote_embed(self, text):
         embed_url = "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction"
         headers = {"Authorization": f"Bearer {self.api_token}"}
         
-        import requests  # Keep locally used import
+        import requests  
         response = requests.post(embed_url, headers=headers, json={"inputs": text})
         response.raise_for_status()
         output = response.json()
     
         if isinstance(output, list):
-            if isinstance(output[0], list):  # expected: [[float, float, ...]]         
+            if isinstance(output[0], list): 
                 embedding = np.array(output[0])
-            elif isinstance(output[0], float):  # fallback: [float, float, ...]
+            elif isinstance(output[0], float): 
                 embedding = np.array(output)
             else:
                 raise ValueError("Unexpected inner type in embedding response.")
@@ -52,14 +52,14 @@ class RAGPipeline:
         print(f"🔍 Final embedding shape: {embedding.shape}")
         return embedding.reshape(1, -1)
 
-    # ✅ Replaced old raw API call with InferenceClient chat interface
+ 
     def generate_answer(self, prompt):
         try:
             response = self.client.text_generation(
                 prompt,
                 max_new_tokens=256,
                 temperature=0.4,
-                return_full_text=False  # This will return just the answer part
+                return_full_text=False 
             )
             return response.strip()
         except Exception as e:
@@ -74,12 +74,12 @@ class RAGPipeline:
     
             distances, indices = self.index.search(query_vec, top_k)
     
-            # ✅ Proper context retrieval
+            
             retrieved_context = "\n".join(
                 [f"Q: {self.questions[i]}\nA: {self.answers[i]}" for i in indices[0]]
             )
     
-            # ✅ Use the retrieved_context correctly
+           
             prompt = f"""
 You are a helpful medical assistant. Use the context below to answer the user’s question clearly and factually.
 
