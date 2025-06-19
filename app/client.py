@@ -1,4 +1,4 @@
-# client.py (interactive version)
+
 import requests
 
 while True:
